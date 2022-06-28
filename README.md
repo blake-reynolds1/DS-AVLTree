@@ -79,4 +79,38 @@
      - A pointer to a base class can also pointer to a derived class
      - Make sure to insert only genuine AVL_nodes
 * Discussion
-  - 
+  - The benefit of implementing AVL nodes with a derived structure is the reuse of all of the member functions of binary search trees
+  - We shall use the AVL_node methods get_balance and set_balance to examine and adjust the balance factor of an AVL node.
+    - Methods set_balance and get_balance may be invoked from pointers left and right
+      - left->get_balance();
+    - But left and right are pointers to Binary_node
+      - A C++ compiler will reject a call such as left->get_balance( ), since there is no such methods in Binary_node
+  - Solution: dummy virtual function added to the base class
+* ```
+  template <class Entry>
+  struct Binary_node {
+    // data members:
+    Entry data;
+    Binary_node<Entry> *left;
+    Binary_node<Entry> *right;
+    // constructors:
+     Binary_node();
+    Binary_node(const Entry &x);
+    // virtual methods:
+    virtual void set_balance(Balance_factor b);
+    virtual Balance_factor get_balance() const;
+  };
+  ```
+* About virtual function in C++
+  - A derived class is handled using pointer or reference to the base class, a call to an overridden virtual function would invoke the behavior defined in the derived class
+* Virtual methods (cont.)
+  - The correct choice between the AVL version and the dummy version of the method is made at runtime
+  - If set_balance( ) is called as a method of an AVL_node, then the AVL version will be used
+  - If set_balance( ) is called as a method of a Binary_node then the dummy version will be used.
+* The AVL tree class is derived from the binary search tree class
+  - The insertion and deletion methods for binary search trees are overridden
+    - Redefinition of base class function in its derived class with same signature, i.e., return type and parameters.
+  - All other binary search tree methods are inherited without any changes
+  - https://www.geeksforgeeks.org/function-overloading-vs-function-overriding-in-cpp/
+* <img width="363" alt="Screen Shot 2022-06-28 at 4 10 03 PM" src="https://user-images.githubusercontent.com/89602311/176288486-94d8774c-305e-4777-9c5c-3cb6f50d61be.png">
+* <img width="414" alt="Screen Shot 2022-06-28 at 4 10 18 PM" src="https://user-images.githubusercontent.com/89602311/176288536-56278e7e-802d-49df-9847-92209f62fdda.png">
